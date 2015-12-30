@@ -16,6 +16,7 @@ type ExampleFullV1 struct {
 
 var (
 	dbHost        = flag.String("db-host", "localhost", "host for postgres database")
+	dbDatabase    = flag.String("db-database", "messagebroker", "database name for postgres database")
 	dbUser        = flag.String("db-user", "messagebroker", "user for postgres database")
 	dbPassword    = flag.String("db-password", "messagebroker", "password for postgres database")
 	messageBroker messagebroker.MessageBroker
@@ -26,7 +27,13 @@ func main() {
 	flag.Parse()
 
 	var err error
-	messageBroker, err = messagebroker.NewPostgresqlMessageBroker(*dbHost, *dbUser, *dbPassword)
+	config := messagebroker.PostgresqlConnectionConfig{
+		Host:     *dbHost,
+		Database: *dbDatabase,
+		User:     *dbUser,
+		Password: *dbPassword,
+	}
+	messageBroker, err = messagebroker.NewPostgresqlMessageBroker(&config)
 	if err != nil {
 		log.Fatalf("error creating message broker: %s \n", err)
 	}

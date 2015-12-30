@@ -12,6 +12,14 @@ type PostgresqlMessageBroker struct {
 	connPool *pgx.ConnPool
 }
 
+type PostgresqlConnectionConfig struct {
+	Host     string // host (e.g. localhost) or path to unix domain socket directory (e.g. /private/tmp)
+	Port     uint16 // default: 5432
+	Database string
+	User     string // default: OS user name
+	Password string
+}
+
 func (e *PostgresqlMessageBroker) Publish(routing string, body []byte) error {
 
 	id := newUniqueID()
@@ -68,13 +76,14 @@ func (e *PostgresqlMessageBroker) Consume(queue string, onMessage func(body []by
 
 }
 
-func NewPostgresqlMessageBroker(host, user, password string) (*PostgresqlMessageBroker, error) {
+func NewPostgresqlMessageBroker(config *PostgresqlConnectionConfig) (*PostgresqlMessageBroker, error) {
 	connPoolConfig := pgx.ConnPoolConfig{
 		ConnConfig: pgx.ConnConfig{
-			Host:     host,
-			User:     user,
-			Password: password,
-			Database: "messagebroker",
+			Host:     config.Host,
+			Port:     config.Port,
+			User:     config.User,
+			Password: config.Password,
+			Database: config.Database,
 		},
 		MaxConnections: 5,
 		AfterConnect:   afterConnect,
