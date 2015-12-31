@@ -35,7 +35,7 @@ func main() {
 	}
 	messageBroker, err = messagebroker.NewPostgresqlMessageBroker(&config)
 	if err != nil {
-		log.Fatalf("error creating message broker: %s \n", err)
+		log.Fatalln("error creating message broker:", err)
 	}
 
 	go sendEvents()
@@ -70,8 +70,8 @@ func onExampleMessage(body []byte) {
 	var exampleFullV1 ExampleFullV1
 	err := json.Unmarshal(body, &exampleFullV1)
 	if err != nil {
-		fmt.Println("Error unmarshal: ", err)
+		fmt.Println("error unmarshal message:", err)
 	}
 
-	fmt.Println("Received example: ", exampleFullV1.Test)
+	fmt.Println("received example:", exampleFullV1.Test)
 }
